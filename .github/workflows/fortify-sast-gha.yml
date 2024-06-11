@@ -1,0 +1,69 @@
+name: Fortify Security Scan
+on:
+  workflow_dispatch:
+  push:
+    #    # Master or main branch that you want to trigger this workflow for
+    branches:
+      - github/*
+  pull_request:
+  # The branches below must be a subset of the branches above
+
+jobs:
+  Fortify-SAST-SCA:
+    runs-on: self-hosted
+    container:
+      image: python
+    permissions: write-all
+
+    steps:
+      # Check out source code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Fortify tools
+        uses: fortify/github-action/setup@v1.2.2
+        with:
+          export-path: true
+          fcli: latest
+
+      - name: Create merge Application Release
+        if: github.event_name == 'pull_request'
+        run: |
+          # Login
+          fcli ssc session login --url ${{secrets.FTFY_SSC_URL}} --token ${{secrets.FTFY_CI_TOKEN_ENC}} -k
+          
+          # Create application version
+          fcli ssc av create "${{ github.event.repository.name }}:${{ github.ref_name }}" --copy-from "${{ github.event.repository.name }}:${{ github.base_ref }}" --auto-required-attrs  --skip-if-exists --store av
+
+      - name: Create Application Release
+        if: github.event_name != 'pull_request'
+        run: |
+          # Login
+          fcli ssc session login --url ${{secrets.FTFY_SSC_URL}} --token ${{secrets.FTFY_CI_TOKEN_ENC}} -k
+          
+          # Create application version
+          fcli ssc av create "${{ github.event.repository.name }}:${{ github.ref_name }}" --auto-required-attrs  --skip-if-exists --store av
+
+      - name: Run FoD SAST Scan
+        uses: fortify/github-action/sc-sast-scan@v1.2.2
+        env:
+          SSC_URL: ${{secrets.FTFY_SSC_URL }}
+          SSC_TOKEN : ${{secrets.FTFY_CI_TOKEN_ENC }}
+          # EXTRA_FOD_LOGIN_OPTS: --socket-timeout=60s
+          SSC_APPVERSION : "${{ github.event.repository.name }}:${{ github.ref_name }}"
+          EXTRA_PACKAGE_OPTS: -q -oss
+          DO_WAIT: true
+          # DO_EXPORT: true
+
+      - name: Fortify Analysis summary
+        run: |
+          fcli ssc session login --url ${{secrets.FTFY_SSC_URL}} --token ${{secrets.FTFY_CI_TOKEN_ENC}} -k
+          fcli ssc action run appversion-summary --appversion "${{ github.event.repository.name }}:${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Fortify PR summary
+        if: github.event_name == 'pull_request'
+        run: |
+          fcli ssc session login --url ${{secrets.FOD_URL}} --client-id ${{secrets.FOD_CLIENT_ID}} --client-secret ${{secrets.FOD_CLIENT_SECRET}} -k
+          fcli ssc action run github-pr-comment --appversion "${{ github.event.repository.name }}:${{ github.ref_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
