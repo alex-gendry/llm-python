@@ -9,7 +9,7 @@ on:
   # The branches below must be a subset of the branches above
 
 jobs:
-  Fortify-SAST-SCA:
+  Fortify-SAST:
     runs-on: self-hosted
     container:
       image: python
@@ -44,11 +44,12 @@ jobs:
           # Create application version
           fcli ssc av create "${{ github.event.repository.name }}:${{ github.ref_name }}" --auto-required-attrs  --skip-if-exists --store av
 
-      - name: Run FoD SAST Scan
+      - name: Run Fortify SAST Scan
         uses: fortify/github-action/sc-sast-scan@v1.2.2
         env:
           SSC_URL: ${{secrets.FTFY_SSC_URL }}
           SSC_TOKEN : ${{secrets.FTFY_CI_TOKEN_ENC }}
+          SC_SAST_TOKEN : ${{secrets.FTFY_SAST_CLIENT_TOKEN }}
           # EXTRA_FOD_LOGIN_OPTS: --socket-timeout=60s
           SSC_APPVERSION : "${{ github.event.repository.name }}:${{ github.ref_name }}"
           EXTRA_PACKAGE_OPTS: -q -oss

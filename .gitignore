@@ -5,3 +5,4 @@ academy/
 .vscode/
 *.db
 streamlit_agent/
+/.idea/
