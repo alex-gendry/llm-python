@@ -6,3 +6,4 @@ academy/
 *.db
 streamlit_agent/
 /.idea/
+/package.zip
