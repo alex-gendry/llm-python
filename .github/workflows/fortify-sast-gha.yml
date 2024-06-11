@@ -57,7 +57,7 @@ jobs:
           SC_SAST_TOKEN : ${{secrets.FTFY_SAST_CLIENT_TOKEN }}
           # EXTRA_FOD_LOGIN_OPTS: --socket-timeout=60s
           SSC_APPVERSION : "${{ github.event.repository.name }}:${{ github.ref_name }}"
-          EXTRA_PACKAGE_OPTS: scancentral package -o package.zip -pyr requirements.txt -yv 3 -oss
+          EXTRA_PACKAGE_OPTS: -pyr requirements.txt -yv 3 -oss
           DO_WAIT: true
           # DO_EXPORT: true
 
