@@ -49,6 +49,9 @@ jobs:
           # Create application version
           fcli ssc av create "${{ github.event.repository.name }}:${{ github.ref_name }}" --auto-required-attrs  --skip-if-exists --store av
 
+      - name : install python requirements
+        run: pip install -U -r requirements.txt
+
       - name: Run Fortify SAST Scan
         uses: fortify/github-action/sc-sast-scan@v1.2.2
         env:
