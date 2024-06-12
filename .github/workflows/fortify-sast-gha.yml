@@ -12,7 +12,7 @@ jobs:
   Fortify-SAST:
     runs-on: self-hosted
     container:
-      image: python
+      image: python:3.11
     permissions: write-all
 
     steps:
