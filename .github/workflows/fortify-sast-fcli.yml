@@ -34,7 +34,7 @@ jobs:
           fcli fod sast setup --release "::rel::" --assessment-type "Static+ Assessment" --frequency Subscription --entitlement-id ${{secrets.FOD_ENTITLEMENT_ID}} --technology-stack "Auto Detect" --audit-preference Automated --oss
           
           # Run SAST & SCA scan
-#          pip install -U -r requirements.txt
+          #pip install -U -r requirements.txt
           scancentral package -o package.zip -oss -pyr requirements.txt -yv 3 
           fcli fod sast start --release "::rel::" -f package.zip --store sastscan
           fcli fod sast wait-for "::sastscan::"
