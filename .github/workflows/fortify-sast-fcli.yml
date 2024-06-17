@@ -25,7 +25,7 @@ jobs:
           
           # Create release
           fcli fod release create "${{ github.event.repository.name }}:${{ github.ref_name }}" --status Production  --skip-if-exists --store rel
-          fcli fod sast setup --release "::rel::" --assessment-type "Static Assessment" --frequency Subscription --entitlement-id ${{secrets.FOD_ENTITLEMENT_ID}} --technology-stack "Auto Detect" --audit-preference Automated --oss
+          fcli fod sast setup --release "::rel::" --assessment-type "Static+ Assessment" --frequency Subscription --entitlement-id ${{secrets.FOD_ENTITLEMENT_ID}} --technology-stack "Auto Detect" --audit-preference Automated --oss
           
           # Run SAST & SCA scan
           pip install -U -r requirements.txt
