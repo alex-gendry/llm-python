@@ -20,6 +20,7 @@ jobs:
 
       - name: Python Setup
         run: |
+          apt update
           apt install -y python3-dev
           apt-get install build-essential -y
 
