@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Python Setup
+        run: |
+          apt install -y python3-dev
+          apt-get install build-essential -y
+
       - name: Run Fortify on Demand analysis
         run: |
           # FoD Login
